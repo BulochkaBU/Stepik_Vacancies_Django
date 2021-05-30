@@ -21,7 +21,9 @@ def main_view(request):
 
 def vacancies_view(request):
     count_vacancy = Vacancy.objects.count()
+    title = "Вакансии"
     return render(request, 'vacancies.html', context={
+        'title': title,
         'vacancies': Vacancy.objects.all(),
         'count_vacancy': count_vacancy,
     })
@@ -29,38 +31,28 @@ def vacancies_view(request):
 
 def vacancies_categories_view(request, categories):
     category = get_object_or_404(Specialty, code=categories)
+    title = category.title
     vacancies = Vacancy.objects.filter(specialty__code=categories)
-    count_vacancy_category = Vacancy.objects.filter(specialty__code=categories).count()
-    return render(request, 'vacancies_categories.html', context={
+    count_vacancy = Vacancy.objects.filter(specialty__code=categories).count()
+    return render(request, 'vacancies.html', context={
+        'title': title,
         'category': category,
         'vacancies': vacancies,
-        'count_vacancy_category': count_vacancy_category
+        'count_vacancy': count_vacancy
     })
 
 
 def companies_view(request, company_pk):
     company = get_object_or_404(Company, pk=company_pk)
     count_vacancy_company = {}
-    for company_pk in Company.objects.all():
-        count_vacancy_company[company_pk.id] = Vacancy.objects.filter(company__id=company_pk.id).count()
-    title_vacancy = company.vacancies.all()[0].title
-    skill_vacancy = company.vacancies.all()[0].skills
-    published_vacancy = company.vacancies.all()[0].published_at
-    min_salary_vacancy = company.vacancies.all()[0].salary_min
-    max_salary_vacancy = company.vacancies.all()[0].salary_max
-    specialty_vacancy = company.vacancies.all()[0].specialty.title
-    specialty_picture_vacancy = company.vacancies.all()[0].specialty.picture
-
+    for vacancies_in_company in Company.objects.all():
+        count_vacancy_company[vacancies_in_company.id] = Vacancy.objects.filter(company__id=vacancies_in_company.id).count()
+    vacancies_company = Vacancy.objects.filter(company__id=vacancies_in_company.id)
     return render(request, 'company.html', context={
         'company': company,
         'count_vacancy_company': count_vacancy_company,
-        'title_vacancy': title_vacancy,
-        'skill_vacancy': skill_vacancy,
-        'published_vacancy': published_vacancy,
-        'min_salary_vacancy': min_salary_vacancy,
-        'max_salary_vacancy': max_salary_vacancy,
-        'specialty_vacancy': specialty_vacancy,
-        'specialty_picture_vacancy': specialty_picture_vacancy,
+        'vacancies_company': vacancies_company,
+
     })
 
 

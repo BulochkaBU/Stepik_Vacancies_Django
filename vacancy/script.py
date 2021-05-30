@@ -26,29 +26,17 @@ if __name__ == '__main__':
             title=specialties_data['title'],
         )
 
-# for vacancy_data in data.jobs:
-#     vacancies = Vacancy.objects.create(
-#         title=vacancy_data['title'],
-#         specialty=specialties,
-#         company=companies,
-#         skills=vacancy_data['skills'],
-#         description=vacancy_data['description'],
-#         salary_min=vacancy_data['salary_from'],
-#         salary_max=vacancy_data['salary_to'],
-#         published_at=vacancy_data['posted'],
-#     )
+    for vacancy_data in data.jobs:
+        vacancies = Vacancy.objects.create(
+            title=vacancy_data['title'],
+            specialty=Specialty.objects.get(code=vacancy_data['specialty']),
+            company=Company.objects.get(id=vacancy_data['company']),
+            skills=vacancy_data['skills'],
+            description=vacancy_data['description'],
+            salary_min=vacancy_data['salary_from'],
+            salary_max=vacancy_data['salary_to'],
+            published_at=vacancy_data['posted'],
+        )
 
     update_logo = Company.objects.all().update(logo="https://place-hold.it/100x60")
     delete_vacancy = Vacancy.objects.all().delete()
-
- for vacancy_data in data.jobs:
-     vacancies = Vacancy.objects.create(
-         title=vacancy_data['title'],
-         specialty=Specialty.objects.get(code=vacancy_data['specialty']),
-         company=Company.objects.get(id=vacancy_data['company']),
-         skills=vacancy_data['skills'],
-         description=vacancy_data['description'],
-         salary_min=vacancy_data['salary_from'],
-         salary_max=vacancy_data['salary_to'],
-         published_at=vacancy_data['posted'],
-     )
