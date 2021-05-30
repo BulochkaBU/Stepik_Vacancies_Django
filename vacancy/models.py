@@ -24,3 +24,11 @@ class Vacancy(models.Model):
     salary_min = models.IntegerField()
     salary_max = models.IntegerField()
     published_at = models.DateField()
+
+
+
+
+
+
+
+
