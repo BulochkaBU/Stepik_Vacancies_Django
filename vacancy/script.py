@@ -9,7 +9,6 @@ if __name__ == '__main__':
 
     from vacancy import data
     from vacancy.models import Company, Specialty, Vacancy
-    from vacancy.data import specialties, companies
 
     for companies_data in data.companies:
         companies = Company.objects.create(
