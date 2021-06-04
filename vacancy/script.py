@@ -7,6 +7,7 @@ django.setup()
 
 if __name__ == '__main__':
 
+    from django.contrib.auth.models import User
     from vacancy import data
     from vacancy.models import Company, Specialty, Vacancy
 
@@ -39,3 +40,9 @@ if __name__ == '__main__':
 
     update_logo = Company.objects.all().update(logo="https://place-hold.it/100x60")
     delete_vacancy = Vacancy.objects.all().delete()
+
+
+
+    User.objects.create_superuser(
+        username='admin', email='admin@example.com', password='SeCreTPaSsWorD'
+    )

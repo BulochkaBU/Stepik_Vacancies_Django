@@ -13,19 +13,49 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
-from vacancy.views import main_view, vacancies_view, vacancies_categories_view, companies_view, vacancy_view
+
+from vacancy.views import main_view, vacancies_view, vacancies_categories_view, companies_view, vacancy_view, \
+    MySignupView, MyLoginView, company_lets_start_view, my_company_empty_view, my_company_view, \
+    my_vacancies_view, my_vacancies_empty_view, my_vacancy_view, send_applications_view
 from vacancy.views import custom_handler404, custom_handler500
 
+
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', main_view, name='main'),
     path('vacancies', vacancies_view, name='vacancies'),
     path('vacancies/cat/<str:categories>', vacancies_categories_view, name='vacancies_cat'),
     path('companies/<int:company_pk>', companies_view, name='companies'),
     path('vacancies/<int:vacancy_pk>', vacancy_view, name='vacancy'),
+    path('vacancies/<int:vacancy_pk>/send', send_applications_view, name='send_applications'),
+    path('mycompany/letsstart', company_lets_start_view, name='company_lets_start'),
+    path('mycompany/create', my_company_empty_view, name='my_company_new'),
+    path('mycompany', my_company_view, name='my_company'),
+    path('mycompany/vacancies/create', my_vacancies_empty_view, name='my_vacancies_empty'),
+    path('mycompany/vacancies', my_vacancies_view, name='my_vacancies'),
+    path('mycompany/vacancies/<int:vacancy_pk>', my_vacancy_view, name='my_vacancy'),
+
+
+
 
 ]
+
+urlpatterns += [
+    path('register', MySignupView.as_view(), name='register'),
+    path('login', MyLoginView.as_view(), name='login'),
+    path('logout', LogoutView.as_view(), name='logout'),
+
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
 
 handler500 = custom_handler500
 handler404 = custom_handler404
