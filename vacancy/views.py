@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView
 
@@ -67,8 +68,8 @@ def vacancy_view(request, vacancy_pk):
     if request.method == 'POST':
         form = SendApplicationsForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('send_applications')
+            form.save(commit=False)
+            return redirect('send_applications', vacancy.id)
     else:
         form = SendApplicationsForm()
     return render(request, 'vacancy.html', context={

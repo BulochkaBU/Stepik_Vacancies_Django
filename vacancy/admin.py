@@ -12,12 +12,11 @@ class CompanyAdmin(admin.ModelAdmin):
 
 
 class ApplicationAdmin(admin.ModelAdmin):
-    fields = ('written_username', 'written_phone', 'written_cover_letter', 'vacancy', 'user')
+    fields = ('written_username', 'written_phone', 'written_cover_letter', 'user', 'vacancy')
 
 
 class SpecialtyAdmin(admin.ModelAdmin):
     fields = ('title', 'picture')
-    readonly_fields = ('title',)
 
 
 admin.site.register(Vacancy, VacancyAdmin)
