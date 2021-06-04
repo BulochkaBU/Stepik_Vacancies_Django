@@ -64,15 +64,13 @@ def companies_view(request, company_pk):
 
 def vacancy_view(request, vacancy_pk):
     vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
-    if request.method == 'GET':
-        return render(request, 'vacancy.html', context={
-            'vacancy': vacancy,
-            'form': SendApplicationsForm})
-    elif request.method == 'POST':
+    if request.method == 'POST':
         form = SendApplicationsForm(request.POST)
         if form.is_valid():
-            print(form.is_valid())
+            form.save()
             return redirect('send_applications')
+    else:
+        form = SendApplicationsForm()
     return render(request, 'vacancy.html', context={
         'vacancy': vacancy,
         'form': form
@@ -90,8 +88,9 @@ class MyLoginView(LoginView):
     template_name = 'login.html'
 
 
-def send_applications_view(request):
-    return render(request, 'sent.html')
+def send_applications_view(request, vacancy_pk):
+    vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
+    return render(request, 'sent.html', context={'vacancy': vacancy})
 
 def company_lets_start_view(request):
     pass

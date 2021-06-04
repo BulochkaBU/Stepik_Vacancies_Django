@@ -8,7 +8,7 @@ class VacancyAdmin(admin.ModelAdmin):
 
 class CompanyAdmin(admin.ModelAdmin):
     fields = ('name', 'location', 'logo', 'description', 'employee_count', 'owner')
-    readonly_fields = ('owner',)
+
 
 
 class ApplicationAdmin(admin.ModelAdmin):
