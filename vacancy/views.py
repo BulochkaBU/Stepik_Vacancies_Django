@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404, redirect
@@ -6,7 +7,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView
 
-from vacancy.forms import SendApplicationsForm
+from vacancy.forms import SendApplicationsForm, MyCompanyForm
 from vacancy.models import Specialty, Company, Vacancy
 
 
@@ -81,17 +82,18 @@ def vacancy_view(request, vacancy_pk):
 class MySignupView(CreateView):
     form_class = UserCreationForm
     success_url = '/'
-    template_name = 'register.html'
+    template_name = 'accounts/register.html'
 
 
 class MyLoginView(LoginView):
     redirect_authenticated_user = True
-    template_name = 'login.html'
+    template_name = 'accounts/login.html'
 
 
 def send_applications_view(request, vacancy_pk):
     vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
     return render(request, 'sent.html', context={'vacancy': vacancy})
+
 
 def company_lets_start_view(request):
     pass
@@ -101,8 +103,19 @@ def my_company_empty_view(request):
     pass
 
 
-def my_company_view(request):
-    return render(request, 'my_company.html')
+class MyCompanyView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'my_company.html', context={'form': MyCompanyForm})
+
+    def post(self, request):
+        form = MyCompanyForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('my_company')
+        return render(request, 'my_company.html', context={'form': form})
+
+
+
 
 
 def my_vacancies_view(request):
@@ -115,6 +128,9 @@ def my_vacancies_empty_view(request):
 
 def my_vacancy_view(request, vacancy_pk):
     return render(request, 'my_vacancy.html')
+
+
+
 
 
 def custom_handler404(request, exception):
