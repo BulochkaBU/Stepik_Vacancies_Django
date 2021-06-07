@@ -1,14 +1,16 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponseNotFound, HttpResponseServerError
+from django.db.models import Count
+from django.http import HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView
 
 from vacancy.forms import SendApplicationsForm, MyCompanyForm
-from vacancy.models import Specialty, Company, Vacancy
+from vacancy.models import Specialty, Company, Vacancy, Application
 
 
 def main_view(request):
@@ -70,6 +72,7 @@ def vacancy_view(request, vacancy_pk):
         form = SendApplicationsForm(request.POST)
         if form.is_valid():
             form.save(commit=False)
+
             return redirect('send_applications', vacancy.id)
     else:
         form = SendApplicationsForm()
@@ -95,15 +98,30 @@ def send_applications_view(request, vacancy_pk):
     return render(request, 'sent.html', context={'vacancy': vacancy})
 
 
-def company_lets_start_view(request):
-    pass
-
-
-def my_company_empty_view(request):
-    pass
+class MyCompanyLetsStart(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'my_company_create.html')
 
 
 class MyCompanyView(LoginRequiredMixin, View):
+    def get(self, request):
+        try:
+            company = get_object_or_404(Company, owner=request.user.id)
+        except Http404:
+            return redirect(reverse('company_lets_start'))
+        return render(request, 'my_company.html', context={'form': MyCompanyForm(instance=company)})
+
+    def post(self, request):
+        company = get_object_or_404(Company, owner=request.user.id)
+        form = MyCompanyForm(request.POST, instance=company)
+        print(form.is_valid())
+        if form.is_valid():
+            form.save()
+            return redirect('my_company')
+        return render(request, 'my_company.html', context={'form': form})
+
+
+class MyCompanyNew(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'my_company.html', context={'form': MyCompanyForm})
 
@@ -113,9 +131,6 @@ class MyCompanyView(LoginRequiredMixin, View):
             form.save()
             return redirect('my_company')
         return render(request, 'my_company.html', context={'form': form})
-
-
-
 
 
 def my_vacancies_view(request):
@@ -128,9 +143,6 @@ def my_vacancies_empty_view(request):
 
 def my_vacancy_view(request, vacancy_pk):
     return render(request, 'my_vacancy.html')
-
-
-
 
 
 def custom_handler404(request, exception):

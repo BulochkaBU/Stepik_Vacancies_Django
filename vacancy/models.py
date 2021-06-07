@@ -10,7 +10,7 @@ class Company(models.Model):
     logo = models.ImageField(upload_to=MEDIA_COMPANY_IMAGE_DIR)
     description = models.TextField()
     employee_count = models.IntegerField()
-    owner = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    owner = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class Specialty(models.Model):
