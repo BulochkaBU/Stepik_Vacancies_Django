@@ -19,13 +19,11 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-
+from account.views import MySignupView, MyLoginView
 from vacancy.views import main_view, vacancies_view, vacancies_categories_view, companies_view, vacancy_view, \
-    MySignupView, MyLoginView, MyCompanyLetsStart, my_vacancies_view, my_vacancies_empty_view, my_vacancy_view, \
-    send_applications_view, MyCompanyView, MyCompanyNew
+    MyCompanyLetsStart, my_vacancies_empty_view, my_vacancy_view, \
+    send_applications_view, MyCompanyView, MyCompanyNew, MyVacanciesView
 from vacancy.views import custom_handler404, custom_handler500
-
-
 
 
 
@@ -41,11 +39,8 @@ urlpatterns = [
     path('mycompany/create', MyCompanyNew.as_view(), name='my_company_new'),
     path('mycompany', MyCompanyView.as_view(), name='my_company'),
     path('mycompany/vacancies/create', my_vacancies_empty_view, name='my_vacancies_empty'),
-    path('mycompany/vacancies', my_vacancies_view, name='my_vacancies'),
+    path('mycompany/vacancies', MyVacanciesView.as_view(), name='my_vacancies'),
     path('mycompany/vacancies/<int:vacancy_pk>', my_vacancy_view, name='my_vacancy'),
-
-
-
 
 ]
 
@@ -55,6 +50,7 @@ urlpatterns += [
     path('logout', LogoutView.as_view(), name='logout'),
 
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

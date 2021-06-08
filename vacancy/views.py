@@ -1,15 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
-from django.db.models import Count
-from django.http import HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView
 
-from vacancy.forms import SendApplicationsForm, MyCompanyForm
+from vacancy.forms import SendApplicationsForm, MyCompanyForm, MyVacanciesForm
 from vacancy.models import Specialty, Company, Vacancy, Application
 
 
@@ -71,8 +69,8 @@ def vacancy_view(request, vacancy_pk):
     if request.method == 'POST':
         form = SendApplicationsForm(request.POST)
         if form.is_valid():
-            form.save(commit=False)
 
+            form.save(commit=False)
             return redirect('send_applications', vacancy.id)
     else:
         form = SendApplicationsForm()
@@ -80,17 +78,6 @@ def vacancy_view(request, vacancy_pk):
         'vacancy': vacancy,
         'form': form
     })
-
-
-class MySignupView(CreateView):
-    form_class = UserCreationForm
-    success_url = '/'
-    template_name = 'accounts/register.html'
-
-
-class MyLoginView(LoginView):
-    redirect_authenticated_user = True
-    template_name = 'accounts/login.html'
 
 
 def send_applications_view(request, vacancy_pk):
@@ -114,9 +101,8 @@ class MyCompanyView(LoginRequiredMixin, View):
     def post(self, request):
         company = get_object_or_404(Company, owner=request.user.id)
         form = MyCompanyForm(request.POST, instance=company)
-        print(form.is_valid())
         if form.is_valid():
-            form.save()
+            form.save(commit=False)
             return redirect('my_company')
         return render(request, 'my_company.html', context={'form': form})
 
@@ -128,13 +114,29 @@ class MyCompanyNew(LoginRequiredMixin, View):
     def post(self, request):
         form = MyCompanyForm(request.POST)
         if form.is_valid():
+            form.instance.owner = self.request.user
             form.save()
             return redirect('my_company')
         return render(request, 'my_company.html', context={'form': form})
 
 
-def my_vacancies_view(request):
-    return render(request, 'my_vacancies_list.html')
+class MyVacanciesView(LoginRequiredMixin, View):
+    def get(self, request):
+        try:
+            vacancy = get_object_or_404(Vacancy, company__owner=request.user.id)
+
+        except Http404:
+            return redirect(reverse('vacancy_lets_start'))
+        return render(request, 'my_vacancies.html', context={'vacancy': vacancy})
+
+    def post(self, request):
+        company = get_object_or_404(Company, owner=request.user.id)
+
+        form = MyVacanciesForm(request.POST, instance=company)
+        if form.is_valid():
+            form.save(commit=False)
+            return redirect('my_vacancy')
+        return render(request, 'my_vacancies.html', context={'form': form})
 
 
 def my_vacancies_empty_view(request):
@@ -145,9 +147,14 @@ def my_vacancy_view(request, vacancy_pk):
     return render(request, 'my_vacancy.html')
 
 
+
+
+
 def custom_handler404(request, exception):
     return HttpResponseNotFound('Страницы не существует!')
 
 
 def custom_handler500(request):
     return HttpResponseServerError('Ошибка сервера!')
+
+
