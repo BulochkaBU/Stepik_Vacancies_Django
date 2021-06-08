@@ -4,6 +4,7 @@ from django.contrib.auth.views import LoginView
 from django.http import Http404, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.utils.datetime_safe import datetime
 from django.views import View
 from django.views.generic import CreateView
 
@@ -68,9 +69,14 @@ def vacancy_view(request, vacancy_pk):
     vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
     if request.method == 'POST':
         form = SendApplicationsForm(request.POST)
+
         if form.is_valid():
 
-            form.save(commit=False)
+            application = form.save(commit=False)
+            form.instance.user = request.user
+            form.instance.vacancy = vacancy
+            application.save()
+
             return redirect('send_applications', vacancy.id)
     else:
         form = SendApplicationsForm()
@@ -81,8 +87,7 @@ def vacancy_view(request, vacancy_pk):
 
 
 def send_applications_view(request, vacancy_pk):
-    vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
-    return render(request, 'sent.html', context={'vacancy': vacancy})
+    return render(request, 'sent.html', context={'vacancy_pk': vacancy_pk})
 
 
 class MyCompanyLetsStart(LoginRequiredMixin, View):
@@ -102,7 +107,7 @@ class MyCompanyView(LoginRequiredMixin, View):
         company = get_object_or_404(Company, owner=request.user.id)
         form = MyCompanyForm(request.POST, instance=company)
         if form.is_valid():
-            form.save(commit=False)
+            form.save()
             return redirect('my_company')
         return render(request, 'my_company.html', context={'form': form})
 
@@ -122,32 +127,45 @@ class MyCompanyNew(LoginRequiredMixin, View):
 
 class MyVacanciesView(LoginRequiredMixin, View):
     def get(self, request):
-        try:
-            vacancy = get_object_or_404(Vacancy, company__owner=request.user.id)
+        vacancy = Vacancy.objects.filter(company__owner=request.user.id)
 
-        except Http404:
-            return redirect(reverse('vacancy_lets_start'))
         return render(request, 'my_vacancies.html', context={'vacancy': vacancy})
 
-    def post(self, request):
-        company = get_object_or_404(Company, owner=request.user.id)
 
-        form = MyVacanciesForm(request.POST, instance=company)
+class MyVacancyView(LoginRequiredMixin, View):
+    def get(self, request, vacancy_pk):
+        vacancy = get_object_or_404(Vacancy, company__owner=request.user.id)
+        count_application = Application.objects.filter(vacancy=vacancy_pk).count()
+        applications = Application.objects.filter(vacancy=vacancy_pk)
+
+        return render(request, 'my_vacancy.html', context={
+            'form': MyVacanciesForm(instance=vacancy),
+            'vacancy_pk': vacancy_pk,
+            'count_application': count_application,
+            'applications': applications,
+        })
+
+    def post(self, request, vacancy_pk):
+        vacancy = get_object_or_404(Vacancy, company__owner=request.user.id)
+        form = MyVacanciesForm(request.POST, instance=vacancy)
         if form.is_valid():
             form.save(commit=False)
-            return redirect('my_vacancy')
+            return redirect('my_vacancy', vacancy_pk)
         return render(request, 'my_vacancies.html', context={'form': form})
 
 
-def my_vacancies_empty_view(request):
-    pass
 
+class MyVacancyNewView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'my_vacancy.html', context={'form': MyVacanciesForm})
 
-def my_vacancy_view(request, vacancy_pk):
-    return render(request, 'my_vacancy.html')
-
-
-
+    def post(self, request, vacancy_pk):
+        form = MyVacanciesForm(request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            form.instance.published_at = datetime.now().strftime("%Y%m%d")
+            return redirect('my_vacancy', vacancy_pk)
+        return render(request, 'my_vacancy.html', context={'form': form})
 
 
 def custom_handler404(request, exception):

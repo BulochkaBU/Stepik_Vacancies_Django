@@ -51,3 +51,4 @@ if __name__ == '__main__':
     # user = User.objects.get(pk=1)
     # user.set_password('admin')
     # user.save()
+
