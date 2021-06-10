@@ -128,13 +128,13 @@ class MyCompanyNew(LoginRequiredMixin, View):
 class MyVacanciesView(LoginRequiredMixin, View):
     def get(self, request):
         vacancy = Vacancy.objects.filter(company__owner=request.user.id)
-
         return render(request, 'my_vacancies.html', context={'vacancy': vacancy})
 
 
 class MyVacancyView(LoginRequiredMixin, View):
     def get(self, request, vacancy_pk):
-        vacancy = get_object_or_404(Vacancy, company__owner=request.user.id)
+        vacancy = Vacancy.objects(company__owner=request.user.id)
+        print(vacancy)
         count_application = Application.objects.filter(vacancy=vacancy_pk).count()
         applications = Application.objects.filter(vacancy=vacancy_pk)
 
@@ -154,17 +154,21 @@ class MyVacancyView(LoginRequiredMixin, View):
         return render(request, 'my_vacancies.html', context={'form': form})
 
 
-
 class MyVacancyNewView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'my_vacancy.html', context={'form': MyVacanciesForm})
 
-    def post(self, request, vacancy_pk):
+    def post(self, request):
         form = MyVacanciesForm(request.POST)
         if form.is_valid():
-            form.save(commit=False)
-            form.instance.published_at = datetime.now().strftime("%Y%m%d")
-            return redirect('my_vacancy', vacancy_pk)
+            vacancy = form.save(commit=False)
+            form.instance.published_at = datetime.now()
+            company = Company.objects.filter(owner=request.user)
+            for company in company:
+                company_pk = company.id
+            form.instance.company_id = company_pk
+            vacancy.save()
+            return redirect('my_vacancies')
         return render(request, 'my_vacancy.html', context={'form': form})
 
 

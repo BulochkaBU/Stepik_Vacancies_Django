@@ -1,0 +1,6 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+{% load crispy_forms_tags %}
+<form method="post" action="register">{% csrf_token %}
+  <table>{{ form.as_table }}</table>
+  <button type="submit">Send</button>
+</form>
