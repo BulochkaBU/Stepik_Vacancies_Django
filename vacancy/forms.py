@@ -1,4 +1,4 @@
-
+from crispy_forms.helper import FormHelper
 from django import forms
 from vacancy.models import Application, Company, Vacancy
 
@@ -26,6 +26,11 @@ class MyCompanyForm(forms.ModelForm):
             'description': 'Информация о компании'
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_enctype = 'multipart/form-data'
+
 
 class MyVacanciesForm(forms.ModelForm):
     class Meta:
@@ -33,7 +38,6 @@ class MyVacanciesForm(forms.ModelForm):
         fields = ('title', 'specialty', 'skills', 'salary_min', 'salary_max', 'description')
         labels = {
             'title': 'Название вакансии',
-            'salary_min': 'Зарплата',
             'specialty':  'Специализация',
             'skills': 'Требуемые навыки',
             'salary_min': 'Зарплата от',

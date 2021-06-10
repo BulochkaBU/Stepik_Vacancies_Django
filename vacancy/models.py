@@ -33,8 +33,6 @@ class Vacancy(models.Model):
     published_at = models.DateField()
 
 
-
-
 class Application(models.Model):
     written_username = models.CharField(max_length=120)
     written_phone = models.IntegerField()

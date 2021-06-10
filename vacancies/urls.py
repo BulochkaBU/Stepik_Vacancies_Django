@@ -25,8 +25,6 @@ from vacancy.views import main_view, vacancies_view, vacancies_categories_view, 
     MyVacancyNewView
 from vacancy.views import custom_handler404, custom_handler500
 
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', main_view, name='main'),

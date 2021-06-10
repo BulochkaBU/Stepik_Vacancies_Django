@@ -3,7 +3,11 @@
 {% block title %}
 <title>Вакансии компании | Джуманджи</title>
 {% endblock %}
-
+<style>
+    body {
+      background-color: #F6F2E6;
+    }
+  </style>
   <main class="container mt-3 pb-5">
     <div class="row mt-5">
       <div class="col-12 col-lg-4">
@@ -27,9 +31,9 @@
                 <div class="card-body px-4">
                   <div class="row align-items-center">
                     <div class="col-6 col-lg-8">
-                      <a href="#" class="mb-1">{{vacancy.title}}</a>
+                      <a href="{% url 'my_vacancy' vacancy.id %}" class="mb-1">{{vacancy.title}}</a>
                       <p class="mb-1">
-                        <span class="mr-4">{{vacancy.salary_min}}</span><a href="#" class="text-info">3 отклика</a>
+                        <span class="mr-4">{{vacancy.salary_min}}</span><a href="{% url 'my_vacancy' vacancy.id %}" class="text-info">{%for vac_id_,amount in count_applications.items%}{%if vacancy.id == vac_id_%} {{amount}} {%endif%}{%endfor%} отклика</a>
                       </p>
                     </div>
                     <div class="col-6 col-lg-4 text-right">
@@ -51,10 +55,5 @@
     </div>
   </main>
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</body>
-</html>
 
 {% endblock %}

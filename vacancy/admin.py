@@ -10,7 +10,6 @@ class CompanyAdmin(admin.ModelAdmin):
     fields = ('name', 'location', 'logo', 'description', 'employee_count', 'owner')
 
 
-
 class ApplicationAdmin(admin.ModelAdmin):
     fields = ('written_username', 'written_phone', 'written_cover_letter', 'user', 'vacancy')
 
@@ -23,4 +22,3 @@ admin.site.register(Vacancy, VacancyAdmin)
 admin.site.register(Company, CompanyAdmin)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Specialty, SpecialtyAdmin)
-
