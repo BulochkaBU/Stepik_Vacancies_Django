@@ -20,9 +20,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from account.views import MySignupView, MyLoginView
-from vacancy.views import main_view, vacancies_view, vacancies_categories_view, companies_view, vacancy_view, \
+from vacancy.views import main_view, vacancies_view, vacancies_categories_view, companies_view, \
     MyCompanyLetsStart, send_applications_view, MyCompanyView, MyCompanyNew, MyVacanciesView, MyVacancyView, \
-    MyVacancyNewView
+    MyVacancyNewView, SearchVacanciesView, VacancyView
 from vacancy.views import custom_handler404, custom_handler500
 
 urlpatterns = [
@@ -31,7 +31,7 @@ urlpatterns = [
     path('vacancies', vacancies_view, name='vacancies'),
     path('vacancies/cat/<str:categories>', vacancies_categories_view, name='vacancies_cat'),
     path('companies/<int:company_pk>', companies_view, name='companies'),
-    path('vacancies/<int:vacancy_pk>', vacancy_view, name='vacancy'),
+    path('vacancies/<int:vacancy_pk>', VacancyView.as_view(), name='vacancy'),
     path('vacancies/<int:vacancy_pk>/send', send_applications_view, name='send_applications'),
 
     path('mycompany/letsstart', MyCompanyLetsStart.as_view(), name='company_lets_start'),
@@ -41,6 +41,8 @@ urlpatterns = [
     path('mycompany/vacancies/create', MyVacancyNewView.as_view(), name='my_vacancy_new'),
     path('mycompany/vacancies', MyVacanciesView.as_view(), name='my_vacancies'),
     path('mycompany/vacancies/<int:vacancy_pk>', MyVacancyView.as_view(), name='my_vacancy'),
+
+    path('search', SearchVacanciesView.as_view(), name='search')
 
 ]
 

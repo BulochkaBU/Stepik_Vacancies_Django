@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% block container %}
+{% load application %}
+
 {% block title %}
 <title>Вакансии компании | Джуманджи</title>
 {% endblock %}
@@ -33,7 +35,7 @@
                     <div class="col-6 col-lg-8">
                       <a href="{% url 'my_vacancy' vacancy.id %}" class="mb-1">{{vacancy.title}}</a>
                       <p class="mb-1">
-                        <span class="mr-4">{{vacancy.salary_min}}</span><a href="{% url 'my_vacancy' vacancy.id %}" class="text-info">{%for vac_id_,amount in count_applications.items%}{%if vacancy.id == vac_id_%} {{amount}} {%endif%}{%endfor%} отклика</a>
+                        <span class="mr-4">{{vacancy.salary_min}}</span><a href="{% url 'my_vacancy' vacancy.id %}" class="text-info">{%for vac_id_,amount in count_applications.items%}{%if vacancy.id == vac_id_%} {{amount|application:'отклик,отклика,откликов'}} {%endif%}{%endfor%}</a>
                       </p>
                     </div>
                     <div class="col-6 col-lg-4 text-right">

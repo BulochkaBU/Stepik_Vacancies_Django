@@ -1,8 +1,13 @@
+from itertools import count
+
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.http import Http404, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.datetime_safe import datetime
+from django.utils.decorators import method_decorator
 from django.views import View
 
 from vacancy.forms import SendApplicationsForm, MyCompanyForm, MyVacanciesForm
@@ -22,6 +27,21 @@ def main_view(request):
         'count_vacancy_speciality': count_vacancy_speciality,
         'count_vacancy_company': count_vacancy_company,
     })
+
+
+class SearchVacanciesView(View):
+
+    def get(self, request, *args, **kwargs):
+        vacancies_query = self.request.GET.get('s')
+        vacancies_found = Vacancy.objects.filter(
+            Q(title__icontains=vacancies_query) | Q(description__icontains=vacancies_query)
+        )
+        return render(request, 'search.html', context={
+            'vacancies_found': vacancies_found,
+            'vacancies_query': vacancies_query,
+
+        },
+        )
 
 
 def vacancies_view(request):
@@ -62,9 +82,38 @@ def companies_view(request, company_pk):
     })
 
 
-def vacancy_view(request, vacancy_pk):
-    vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
-    if request.method == 'POST':
+# def vacancy_view(request, vacancy_pk):
+#     vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
+#     if request.method == 'POST':
+#
+#         form = SendApplicationsForm(request.POST)
+#         if form.is_valid():
+#             application = form.save(commit=False)
+#             form.instance.user = request.user
+#             form.instance.vacancy = vacancy
+#             application.save()
+#             return redirect('send_applications', vacancy.id)
+#     else:
+#         form = SendApplicationsForm()
+#     return render(request, 'vacancy.html', context={
+#         'vacancy': vacancy,
+#         'form': form
+#     })
+
+
+class VacancyView(View):
+
+    def get(self, request, vacancy_pk):
+        vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
+        form = SendApplicationsForm()
+        return render(request, 'vacancy.html', context={
+            'vacancy': vacancy,
+            'form': form
+        })
+
+    @method_decorator(login_required)
+    def post(self, request, vacancy_pk):
+        vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
         form = SendApplicationsForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
@@ -72,12 +121,8 @@ def vacancy_view(request, vacancy_pk):
             form.instance.vacancy = vacancy
             application.save()
             return redirect('send_applications', vacancy.id)
-    else:
-        form = SendApplicationsForm()
-    return render(request, 'vacancy.html', context={
-        'vacancy': vacancy,
-        'form': form
-    })
+
+
 
 
 def send_applications_view(request, vacancy_pk):
@@ -90,6 +135,7 @@ class MyCompanyLetsStart(LoginRequiredMixin, View):
 
 
 class MyCompanyView(LoginRequiredMixin, View):
+
     def get(self, request):
         try:
             company = get_object_or_404(Company, owner=request.user.id)

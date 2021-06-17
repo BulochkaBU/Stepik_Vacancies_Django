@@ -45,3 +45,7 @@ class MyVacanciesForm(forms.ModelForm):
             'description': 'Описание вакансии'
 
         }
+
+
+class SearchForm(forms.Form):
+    query = forms.CharField()
