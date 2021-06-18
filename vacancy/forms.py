@@ -1,6 +1,6 @@
 from crispy_forms.helper import FormHelper
 from django import forms
-from vacancy.models import Application, Company, Vacancy
+from vacancy.models import Application, Company, Vacancy, Resume
 
 
 class SendApplicationsForm(forms.ModelForm):
@@ -49,3 +49,23 @@ class MyVacanciesForm(forms.ModelForm):
 
 class SearchForm(forms.Form):
     query = forms.CharField()
+
+
+class ResumeForm(forms.ModelForm):
+    class Meta:
+        model = Resume
+        fields = ('name', 'surname', 'salary', 'status', 'specialty', 'grade', 'education', 'experience', 'portfolio')
+        labels = {
+            'name': 'Имя',
+            'surname':  'Фамилия',
+            'salary': 'Ожидаемое вознаграждение',
+            'specialty': 'Специализация',
+            'grade': 'Квалификация',
+            'status': 'Готовность к работе',
+            'education': 'Образование',
+            'experience': 'Опыт работы',
+            'portfolio': 'Ссылка на портфолио',
+
+        }
+
+

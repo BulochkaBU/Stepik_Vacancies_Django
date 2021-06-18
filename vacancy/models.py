@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -43,26 +45,29 @@ class Application(models.Model):
 
 class Resume(models.Model):
     class Grades(models.TextChoices):
-        JUN = 'Junior'
-        INT = 'Intern'
-        MID = 'Middle'
-        SEN = 'Senior'
-        TIM = 'Team Lead'
+        INTERN = 'INT', _('Стажер')
+        JUNIOR = 'JUN', _('Джуниор')
+        MIDDLE = 'MID', _('Миддл')
+        SENIOR = 'SNR', _('Синьор')
+        LEAD = 'LD', _('Лид')
 
     class Status(models.TextChoices):
-        not_looking_for_a_job = 'Не ищу работу'
-        considering_offers = 'Рассматриваю предложения'
-        looking_for_a_job = 'Ищу работу'
+        not_looking_for_a_job = 'not_looking_for_a_job', _('Не ищу работу')
+        considering_offers = 'considering_offers', _('Рассматриваю предложения')
+        looking_for_a_job = 'looking_for_a_job', _('Ищу работу')
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='resume')
     name = models.CharField(max_length=120)
     surname = models.CharField(max_length=120)
     salary = models.PositiveIntegerField()
-    grade = models.CharField(choices=Grades.choices, max_length=120)
-    status = models.CharField(choices=Status.choices, max_length=120)
+    grade = models.CharField(choices=Grades.choices, max_length=4)
+    status = models.CharField(choices=Status.choices, max_length=26)
     specialty = models.ForeignKey(Specialty, on_delete=models.CASCADE, related_name='resume')
     education = models.TextField()
     experience = models.TextField()
     portfolio = models.CharField(max_length=120)
+
+
+
 
 

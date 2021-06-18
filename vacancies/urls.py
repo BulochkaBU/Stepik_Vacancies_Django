@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from account.views import MySignupView, MyLoginView
+from vacancy.resume import ResumeLetsStart, ResumeNew, ResumeView
 from vacancy.views import main_view, vacancies_view, vacancies_categories_view, companies_view, \
     MyCompanyLetsStart, send_applications_view, MyCompanyView, MyCompanyNew, MyVacanciesView, MyVacancyView, \
     MyVacancyNewView, SearchVacanciesView, VacancyView
@@ -42,7 +43,11 @@ urlpatterns = [
     path('mycompany/vacancies', MyVacanciesView.as_view(), name='my_vacancies'),
     path('mycompany/vacancies/<int:vacancy_pk>', MyVacancyView.as_view(), name='my_vacancy'),
 
-    path('search', SearchVacanciesView.as_view(), name='search')
+    path('search', SearchVacanciesView.as_view(), name='search'),
+
+    path('myresume/letsstart', ResumeLetsStart.as_view(), name='resume-create'),
+    path('myresume/create', ResumeNew.as_view(), name='resume-new'),
+    path('myresume', ResumeView.as_view(), name='resume-edit'),
 
 ]
 
