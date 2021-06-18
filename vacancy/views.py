@@ -1,5 +1,3 @@
-from itertools import count
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -34,14 +32,12 @@ class SearchVacanciesView(View):
     def get(self, request, *args, **kwargs):
         vacancies_query = self.request.GET.get('s')
         vacancies_found = Vacancy.objects.filter(
-            Q(title__icontains=vacancies_query) | Q(description__icontains=vacancies_query)
+            Q(title__icontains=vacancies_query) | Q(description__icontains=vacancies_query),
         )
         return render(request, 'search.html', context={
             'vacancies_found': vacancies_found,
             'vacancies_query': vacancies_query,
-
-        },
-        )
+        })
 
 
 def vacancies_view(request):
@@ -63,7 +59,7 @@ def vacancies_categories_view(request, categories):
         'title': title,
         'category': category,
         'vacancies': vacancies,
-        'count_vacancy': count_vacancy
+        'count_vacancy': count_vacancy,
     })
 
 
@@ -82,25 +78,6 @@ def companies_view(request, company_pk):
     })
 
 
-# def vacancy_view(request, vacancy_pk):
-#     vacancy = get_object_or_404(Vacancy, pk=vacancy_pk)
-#     if request.method == 'POST':
-#
-#         form = SendApplicationsForm(request.POST)
-#         if form.is_valid():
-#             application = form.save(commit=False)
-#             form.instance.user = request.user
-#             form.instance.vacancy = vacancy
-#             application.save()
-#             return redirect('send_applications', vacancy.id)
-#     else:
-#         form = SendApplicationsForm()
-#     return render(request, 'vacancy.html', context={
-#         'vacancy': vacancy,
-#         'form': form
-#     })
-
-
 class VacancyView(View):
 
     def get(self, request, vacancy_pk):
@@ -108,7 +85,7 @@ class VacancyView(View):
         form = SendApplicationsForm()
         return render(request, 'vacancy.html', context={
             'vacancy': vacancy,
-            'form': form
+            'form': form,
         })
 
     @method_decorator(login_required)
@@ -121,8 +98,6 @@ class VacancyView(View):
             form.instance.vacancy = vacancy
             application.save()
             return redirect('send_applications', vacancy.id)
-
-
 
 
 def send_applications_view(request, vacancy_pk):
@@ -171,7 +146,8 @@ class MyVacanciesView(LoginRequiredMixin, View):
         count_applications = {}
         for vac in vacancy:
             count_applications[vac.id] = Application.objects.filter(vacancy=vac.id).count()
-        return render(request, 'my_vacancies.html', context={'vacancy': vacancy, 'count_applications': count_applications})
+        return render(request, 'my_vacancies.html',
+                      context={'vacancy': vacancy, 'count_applications': count_applications})
 
 
 class MyVacancyView(LoginRequiredMixin, View):

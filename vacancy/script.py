@@ -42,7 +42,7 @@ if __name__ == '__main__':
     delete_vacancy = Vacancy.objects.all().delete()
 
     User.objects.create_superuser(
-        username='admin', email='admin@example.com', password='admin'
+        username='admin', email='admin@example.com', password='admin',
     )
 
     user = User.objects.get(pk=1)

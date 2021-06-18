@@ -23,7 +23,7 @@ class MyCompanyForm(forms.ModelForm):
             'logo': 'Логотип',
             'location': 'География',
             'employee_count': 'Количество человек в компании',
-            'description': 'Информация о компании'
+            'description': 'Информация о компании',
         }
 
     def __init__(self, *args, **kwargs):
@@ -42,8 +42,7 @@ class MyVacanciesForm(forms.ModelForm):
             'skills': 'Требуемые навыки',
             'salary_min': 'Зарплата от',
             'salary_max': 'Зарплата до',
-            'description': 'Описание вакансии'
-
+            'description': 'Описание вакансии',
         }
 
 
@@ -67,5 +66,3 @@ class ResumeForm(forms.ModelForm):
             'portfolio': 'Ссылка на портфолио',
 
         }
-
-

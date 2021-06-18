@@ -14,6 +14,9 @@ class Company(models.Model):
     employee_count = models.IntegerField()
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Specialty(models.Model):
     code = models.CharField(max_length=20)
@@ -34,6 +37,9 @@ class Vacancy(models.Model):
     salary_max = models.IntegerField()
     published_at = models.DateField()
 
+    def __str__(self):
+        return f'{self.title}'
+
 
 class Application(models.Model):
     written_username = models.CharField(max_length=120)
@@ -41,6 +47,9 @@ class Application(models.Model):
     written_cover_letter = models.TextField()
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='applications')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
+
+    def __str__(self):
+        return f'{self.written_username}, {self.written_cover_letter}'
 
 
 class Resume(models.Model):
@@ -67,7 +76,5 @@ class Resume(models.Model):
     experience = models.TextField()
     portfolio = models.CharField(max_length=120)
 
-
-
-
-
+    def __str__(self):
+        return f'{self.name}, {self.surname} {self.experience}'
