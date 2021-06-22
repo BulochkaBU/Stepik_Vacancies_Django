@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
-
-
+{% load ru_pluralize %}
 {% block title %}
 <title>Компания | Джуманджи</title>
 {% endblock %}
@@ -15,7 +14,7 @@
         <img src="{{ company.logo.url }}" width="130" height="80" alt="">
       </div>
       <h1 class="h1 text-center mx-auto mt-0 pt-1" style="font-size: 70px;"><strong>{{company.name}}</strong></h1>
-      <p class="text-center pt-1">Компания, {{company.location}}, {%for company_id_,amount in count_vacancy_company.items%}{%if company.id == company_id_%} {{amount}} {%endif%}{%endfor%} вакансий</p>
+      <p class="text-center pt-1">Компания, {{company.location}}, {%for company_id_,amount in count_vacancy_company.items%}{%if company.id == company_id_%} {{amount|ru_pluralize:'вакансия,вакансии,вакансий'}} {%endif%}{%endfor%}</p>
       <div class="row mt-5">
         <div class="col-12 col-lg-8 offset-lg-2 m-auto">
           {% for vacancy in  vacancies_company%}
